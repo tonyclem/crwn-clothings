@@ -7,7 +7,7 @@ import rootReducer from './root-reducer';
 
 const middlewares = [];
 
-// hidden the developer tools
+// hidden the developer tools for every browers
 if (process.env.NODE_ENV === 'development') {
     middlewares.push(logger);
 }
