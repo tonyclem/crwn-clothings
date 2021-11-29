@@ -12,6 +12,7 @@ const config = {
     measurementId: "G-Z09B1839PL"
 };
 
+// firebase setup to store user info
 export const createUserProfileDocument = async (userAuth, additionalData) => {
     if (!userAuth) return;
 
@@ -40,7 +41,44 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
 
 firebase.initializeApp(config);
 
+// creating to function to collect data from database
+export const addCollectionAndDocuments = async (collectionKey, objectsToAdd)=>
+ {const collectionRef = firestore.collection(collectionKey);
+     console.log(collectionRef)
+    // Batch focuntion 
+    const batch = firestore.batch();
+    objectsToAdd.forEach(obj => {
+        const newDocRef = collectionRef.doc();
+        // setting the doc and newDoRef togeter
+        batch.set(newDocRef, obj);
+    })
+    // to Fire the batch from the database, but using async 
+    return await batch.commit() 
+};
+
+// converting collentiong to array
+export const convertCollectionsSnapshotToMap = collections => {
+    const transformedCollection = collections.docs.map(doc => {
+        const { title , items } = doc.data();
+
+        return {
+            routeName: encodeURI(title.toLowerCase()),
+            id: doc.id,
+            title,
+            items
+        }
+    });
+
+        
+    return transformedCollection.reduce((accumulator, collection) => {
+        accumulator[collection.title.toLowerCase()] = collection;
+        return accumulator;
+    }, {});
+}
+
+
 export const auth = firebase.auth();
+
 export const firestore = firebase.firestore();
 
 const provider = new firebase.auth.GoogleAuthProvider();
